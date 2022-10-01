@@ -30,8 +30,6 @@ public class MainController implements Initializable {
     @FXML
     private Label rootFolderPath;
 
-    @FXML
-    private Button selectRootFolderBtn;
 
     @FXML
     private ListView<Path> uselessFolderList;
@@ -56,16 +54,12 @@ public class MainController implements Initializable {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
-            // ... user chose OK
-            System.out.println("rename folder");
 
             if(uselessFolderLocator!=null){
                 uselessFolderLocator.renameFolders();
                 uselessFolderList.getItems().clear();
                 msg.setText(""+uselessFolderLocator.getUselessFolders().size()+" folders renamed");
             }
-        } else {
-            // ... user chose CANCEL or closed the dialog
         }
 
 
@@ -75,7 +69,6 @@ public class MainController implements Initializable {
 
     @FXML
     void selectRootFolder(ActionEvent event) {
-        System.out.println("select root");
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File file = directoryChooser.showDialog(rootFolderPath.getScene().getWindow());
         if (file != null) {
