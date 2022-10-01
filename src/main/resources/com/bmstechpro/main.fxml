@@ -29,14 +29,6 @@
                                     <Font size="15.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="msg" prefHeight="29.0" prefWidth="594.0" text="Root Folder:" textFill="#e80808">
-                                 <font>
-                                    <Font size="15.0" />
-                                 </font>
-                                 <padding>
-                                    <Insets left="10.0" />
-                                 </padding>
-                              </Label>
                            </children>
                         </AnchorPane>
                         <AnchorPane prefHeight="200.0" prefWidth="200.0">
@@ -103,6 +95,18 @@
                         </VBox>
                      </children>
                   </HBox>
+               </children>
+            </AnchorPane>
+            <AnchorPane prefHeight="42.0" prefWidth="1200.0">
+               <children>
+                  <Label fx:id="msg" layoutX="-233.0" layoutY="5.0" prefHeight="42.0" prefWidth="1200.0" text="Root Folder:" textFill="#e80808" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </Label>
                </children>
             </AnchorPane>
          </children>

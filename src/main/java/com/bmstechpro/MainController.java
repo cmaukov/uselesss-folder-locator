@@ -8,9 +8,7 @@ import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 
 import java.io.File;
@@ -18,6 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -50,12 +49,26 @@ public class MainController implements Initializable {
 
     @FXML
     void renameFolders(ActionEvent event) {
-        System.out.println("rename folder");
-        if(uselessFolderLocator!=null){
-            uselessFolderLocator.renameFolders();
-            uselessFolderList.getItems().clear();
-            msg.setText(""+uselessFolderLocator.getUselessFolders().size()+" folders renamed");
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Dialog");
+        alert.setHeaderText("Look, a Confirmation Dialog");
+        alert.setContentText("Are you sure you want to rename "+ uselessFolderLocator.getUselessFolders().size()+" folders ?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            // ... user chose OK
+            System.out.println("rename folder");
+
+            if(uselessFolderLocator!=null){
+                uselessFolderLocator.renameFolders();
+                uselessFolderList.getItems().clear();
+                msg.setText(""+uselessFolderLocator.getUselessFolders().size()+" folders renamed");
+            }
+        } else {
+            // ... user chose CANCEL or closed the dialog
         }
+
+
 
 
     }
@@ -66,8 +79,9 @@ public class MainController implements Initializable {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File file = directoryChooser.showDialog(rootFolderPath.getScene().getWindow());
         if (file != null) {
-            rootFolderPath.setText(file.getPath());
+
             clear();
+            rootFolderPath.setText(file.getPath());
             try {
                 uselessFolderLocator = new UselessFolderLocator(file.getPath());
                 List<Path> files = uselessFolderLocator.getFilesList();
