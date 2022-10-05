@@ -4,6 +4,7 @@ package com.bmstechpro;
  * @author Konstantin Staykov
  */
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,6 +19,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainController implements Initializable {
 
@@ -37,32 +40,32 @@ public class MainController implements Initializable {
     @FXML
     private Label msg;
 
-   private UselessFolderLocator uselessFolderLocator;
+    private UselessFolderLocator uselessFolderLocator;
+
+    private ExecutorService executorService;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         clear();
         renameFolderBtn.disableProperty().bind(Bindings.isEmpty(uselessFolderList.getItems()));
+        executorService = Executors.newSingleThreadExecutor();
     }
 
     @FXML
     void renameFolders(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText("Look, a Confirmation Dialog");
-        alert.setContentText("Are you sure you want to rename "+ uselessFolderLocator.getUselessFolders().size()+" folders ?");
+        alert.setHeaderText("Are you sure you want to rename " + uselessFolderLocator.getUselessFolders().size() + " folders ?");
 
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
+        if (result.get() == ButtonType.OK) {
 
-            if(uselessFolderLocator!=null){
+            if (uselessFolderLocator != null) {
                 uselessFolderLocator.renameFolders();
                 uselessFolderList.getItems().clear();
-                msg.setText(""+uselessFolderLocator.getUselessFolders().size()+" folders renamed");
+                msg.setText("" + uselessFolderLocator.getUselessFolders().size() + " folders renamed");
             }
         }
-
-
 
 
     }
@@ -75,16 +78,22 @@ public class MainController implements Initializable {
 
             clear();
             rootFolderPath.setText(file.getPath());
-            try {
-                uselessFolderLocator = new UselessFolderLocator(file.getPath());
-                List<Path> files = uselessFolderLocator.getFilesList();
-                List<Path> uselessFolders = uselessFolderLocator.getUselessFolders();
-                filesList.getItems().addAll(files);
-                uselessFolderList.getItems().addAll(uselessFolders);
-            } catch (IOException e) {
-                msg.setText("Ops... Check permissions");
-                uselessFolderLocator = null;
-            }
+            executorService.execute(() -> {
+                try {
+                    uselessFolderLocator = new UselessFolderLocator(file.getPath());
+                    Platform.runLater(()->{
+                        List<Path> files = uselessFolderLocator.getFilesList();
+                        List<Path> uselessFolders = uselessFolderLocator.getUselessFolders();
+                        filesList.getItems().addAll(files);
+                        uselessFolderList.getItems().addAll(uselessFolders);
+                    });
+
+                } catch (IOException e) {
+                    msg.setText("Ops... Check permissions");
+                    uselessFolderLocator = null;
+                }
+            });
+
         } else {
             clear();
         }
